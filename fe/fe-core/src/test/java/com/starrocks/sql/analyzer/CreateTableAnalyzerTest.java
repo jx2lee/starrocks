@@ -164,6 +164,36 @@ public class CreateTableAnalyzerTest {
         analyzeSuccess(keyPartitionExprSourceSql);
     }
 
+    @Test
+    public void testPartitionColumnWithAndWithoutBracket() {
+        String sqlWithBracketInPartitionBy = "CREATE TABLE test_create_table_db.t_pk_partition_with_bracket (\n" +
+                "  `order_id` bigint NOT NULL,\n" +
+                "  `event_date` date NOT NULL,\n" +
+                "  `customer_id` int,\n" +
+                "  `amount` decimal(18, 2),\n" +
+                "  `region` varchar(50)\n" +
+                ") ENGINE=OLAP\n" +
+                "PRIMARY KEY(`order_id`, `event_date`)\n" +
+                "PARTITION BY (`event_date`)\n" +
+                "DISTRIBUTED BY HASH(`order_id`)\n" +
+                "PROPERTIES(\"replication_num\" = \"1\")";
+
+        String sqlWithoutBracketInPartitionBy = "CREATE TABLE test_create_table_db.t_pk_partition_without_bracket (\n" +
+                "  `order_id` bigint NOT NULL,\n" +
+                "  `event_date` date NOT NULL,\n" +
+                "  `customer_id` int,\n" +
+                "  `amount` decimal(18, 2),\n" +
+                "  `region` varchar(50)\n" +
+                ") ENGINE=OLAP\n" +
+                "PRIMARY KEY(`order_id`, `event_date`)\n" +
+                "PARTITION BY `event_date`\n" +
+                "DISTRIBUTED BY HASH(`order_id`)\n" +
+                "PROPERTIES(\"replication_num\" = \"1\")";
+
+        analyzeSuccess(sqlWithBracketInPartitionBy);
+        analyzeSuccess(sqlWithoutBracketInPartitionBy);
+    }
+
     private void testValidComplexDefault(String columnDef) {
         String sql = "CREATE TABLE test_create_table_db.test_complex_default (\n" +
                 "    id INT,\n" +
